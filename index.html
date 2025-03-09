@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>唐茶歌单</title>
+    <style>
+        /* 基础重置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* 整体背景设置 */
+        body {
+            background: linear-gradient(to bottom, #FDB99B, #A770EF);
+            min-height: 100vh;
+            padding: 20px;
+            cursor: url('shubiao.png'), auto;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* 星光容器 */
+        .stars-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999; /* 确保星光在最外层 */
+        }
+
+        /* 单个星光粒子 */
+        .star {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: twinkle 3s infinite ease-in-out;
+        }
+
+        /* 星光动画 */
+        @keyframes twinkle {
+            0%, 100% {
+                opacity: 0.3;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        /* 歌单主容器 */
+        .song-container {
+            width: 80%;
+            background: rgba(255, 255, 255, 0.8); /* 表格透明度80% */
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            padding: 25px;
+            position: relative;
+            z-index: 1; /* 确保内容在星光下方 */
+        }
+
+        /* 右侧固定区域容器 */
+        .right-side-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 16%;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 1; /* 确保内容在星光下方 */
+        }
+
+        /* 个人信息区域 */
+        .profile-container {
+            background: rgba(255, 255, 255, 0.9); /* 稍微不透明 */
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+
+        /* 筛选区域 */
+        .filter-container {
+            background: rgba(255, 255, 255, 0.9); /* 稍微不透明 */
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        /* 表格样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border: 2px solid #A06705;
+        }
+
+        th, td {
+            border: 1px solid #A06755;
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(160, 103, 5, 0.6); /* 表头透明度80% */
+            color: white;
+        }
+
+        /* 隐藏B列和C列 */
+        th:nth-child(2),
+        th:nth-child(3),
+        td:nth-child(2),
+        td:nth-child(3) {
+            display: none;
+        }
+
+        /* 行悬停效果 */
+        tr:hover td {
+            background: rgba(160, 103, 5, 0.1);
+        }
+
+        /* 按钮基础样式 */
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border-radius: 25px;
+            border: 2px solid #A06705;
+            background: white;
+            color: #A06705;
+            text-align: center;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            margin-bottom: 10px;
+        }
+
+        .btn:hover {
+            background: #A06705;
+            color: white;
+        }
+
+        /* 特殊按钮样式 */
+        #randomSong {
+            background: #FDB99B;
+            color: #A06705;
+            border-color: #A06705;
+        }
+
+        #randomSong:hover {
+            background: #8E44AD;
+        }
+
+        /* 筛选控件样式 */
+        .filter-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #A06705;
+            border-radius: 25px;
+            margin-bottom: 15px;
+        }
+
+        #letterFilter {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #A06705;
+            border-radius: 25px;
+            background: white;
+            margin-bottom: 15px;
+        }
+
+        #foreignFilter {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #A06705;
+            border-radius: 25px;
+            background: white;
+            color: #A06705;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+
+        #foreignFilter.active {
+            background: #A06705;
+            color: white;
+        }
+        /* 隐藏表格的第二行（歌名行） */
+tbody tr:first-child {
+    display: none;
+}
+
+/* 确保表头棕色区域仍然显示 */
+thead th {
+    background: #A06705; /* 棕色背景 */
+    color: white; /* 文字颜色 */
+    padding: 15px; /* 内边距 */
+    text-align: left; /* 文字对齐 */
+}
+    </style>
+</head>
+<body>
+    <!-- 星光容器 -->
+    <div class="stars-container" id="starsContainer"></div>
+
+    <!-- 歌单区域 -->
+    <div class="song-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>歌名</th>
+                    <th>首字母</th>  <!-- 隐藏列 -->
+                    <th>外文</th>    <!-- 隐藏列 -->
+                </tr>
+            </thead>
+            <tbody id="songList">
+                <!-- 动态加载内容 -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- 右侧固定区域 -->
+    <div class="right-side-container">
+        <!-- 个人信息区域 -->
+        <div class="profile-container">
+            <img src="唐茶.png" class="avatar" alt="头像" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px;">
+            <h2 style="color: #A06705; margin: 15px 0;">唐茶</h2>
+            <a href="https://www.acfun.cn/u/2869300" class="btn" target="_blank">个人主页</a>
+            <a href="https://live.acfun.cn/live/2869300" class="btn" target="_blank">直播页面</a>
+        </div>
+
+        <!-- 筛选区域 -->
+        <div class="filter-container">
+            <input type="text" id="searchInput" class="filter-input" placeholder="搜索歌名...">
+            <select id="letterFilter">
+                <option value="">全部首字母</option>
+            </select>
+            <button id="foreignFilter">外文歌曲</button>
+            <button id="randomSong" class="btn">随心一点</button>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+    <script>
+        // 创建随机星光
+        function createStars() {
+            const container = document.getElementById('starsContainer');
+            const starCount = 100; // 星光数量增加到100个
+            
+            for (let i = 0; i < starCount; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                
+                // 随机初始位置
+                const x = Math.random() * 100;
+                const y = Math.random() * 100;
+                
+                // 随机大小（2-5px）
+                const size = 3 + Math.random() * 8; // 调整星光大小
+                
+                // 设置样式
+                star.style.cssText = `
+                    left: ${x}%;
+                    top: ${y}%;
+                    width: ${size}px;
+                    height: ${size}px;
+                    animation-delay: ${Math.random() * 2}s;
+                `;
+
+                // 添加飘动动画
+                startFloating(star);
+                container.appendChild(star);
+            }
+        }
+
+        // 飘动动画效果
+        function startFloating(star) {
+            let x = parseFloat(star.style.left);
+            let y = parseFloat(star.style.top);
+            let dx = (Math.random() - 0.4) * 0.2; // X轴移动速度
+            let dy = (Math.random() - 0.4) * 0.1; // Y轴移动速度
+
+            function animate() {
+                x += dx;
+                y += dy;
+                
+                // 边界检测
+                if (x < -5 || x > 105) dx *= -1;
+                if (y < -5 || y > 105) dy *= -1;
+
+                star.style.left = `${x}%`;
+                star.style.top = `${y}%`;
+                
+                requestAnimationFrame(animate);
+            }
+            
+            requestAnimationFrame(animate);
+        }
+
+        // 初始化星光
+        createStars();
+
+        // 歌单功能
+        let songs = [];
+        let currentFilters = {
+            search: '',
+            letter: '',
+            foreign: false
+        };
+
+        // 加载Excel数据
+        function loadSongs() {
+            fetch('唐茶歌单.xlsx')
+                .then(response => response.arrayBuffer())
+                .then(data => {
+                    const workbook = XLSX.read(new Uint8Array(data), { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    songs = jsonData
+                        .filter(row => row.length >= 3 && row[0] && row[0].trim())
+                        .map(row => ({
+                            name: (row[0] || '').trim(),
+                            letter: (row[1] || '').toUpperCase().trim(),
+                            foreign: String(row[2]).toUpperCase() === 'TRUE'
+                        }));
+                    
+                    initLetterFilter();
+                    renderTable();
+                });
+        }
+
+        // 初始化首字母筛选
+        function initLetterFilter() {
+            const letters = [...new Set(songs.map(s => s.letter))].sort();
+            const filter = document.getElementById('letterFilter');
+            
+            letters.forEach(letter => {
+                if (letter) {
+                    const option = document.createElement('option');
+                    option.value = letter;
+                    option.textContent = letter;
+                    filter.appendChild(option);
+                }
+            });
+        }
+
+        // 渲染表格
+        function renderTable() {
+            const filtered = songs.filter(song => {
+                if (!song.name || !song.letter) return false;
+                
+                const matchSearch = song.name.toLowerCase().includes(
+                    currentFilters.search.toLowerCase()
+                );
+                const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
+                const matchForeign = !currentFilters.foreign || song.foreign;
+                return matchSearch && matchLetter && matchForeign;
+            });
+
+            const tbody = document.getElementById('songList');
+            tbody.innerHTML = filtered.map(song => `
+                <tr>
+                    <td>${song.name}</td>
+                    <td>${song.letter}</td>  <!-- 隐藏列 -->
+                    <td>${song.foreign ? 'TRUE' : 'FALSE'}</td>  <!-- 隐藏列 -->
+                </tr>
+            `).join('');
+
+            // 绑定复制功能
+document.querySelectorAll('#songList td:first-child').forEach(td => {
+    td.addEventListener('click', () => {
+        navigator.clipboard.writeText(td.textContent)
+            .then(() => alert(`已复制：${td.textContent}`))
+            .catch(() => alert('复制失败，请检查权限设置'));
+    });
+});
+        }
+
+        // 随机点歌功能
+        function randomSong() {
+            const filteredSongs = songs.filter(song => {
+                if (!song.name || !song.letter) return false;
+                
+                const matchSearch = song.name.toLowerCase().includes(
+                    currentFilters.search.toLowerCase()
+                );
+                const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
+                const matchForeign = !currentFilters.foreign || song.foreign;
+                return matchSearch && matchLetter && matchForeign;
+            });
+
+            if (filteredSongs.length > 0) {
+                const randomIndex = Math.floor(Math.random() * filteredSongs.length);
+                const song = filteredSongs[randomIndex];
+                alert(`随机推荐：${song.name}`);
+            } else {
+                alert('当前筛选条件下没有歌曲');
+            }
+        }
+
+        // 事件监听
+        document.getElementById('searchInput').addEventListener('input', e => {
+            currentFilters.search = e.target.value;
+            renderTable();
+        });
+
+        document.getElementById('letterFilter').addEventListener('change', e => {
+            currentFilters.letter = e.target.value;
+            renderTable();
+        });
+
+        document.getElementById('foreignFilter').addEventListener('click', () => {
+            currentFilters.foreign = !currentFilters.foreign;
+            document.getElementById('foreignFilter').classList.toggle('active');
+            renderTable();
+        });
+
+        document.getElementById('randomSong').addEventListener('click', randomSong);
+
+        // 初始化加载
+        loadSongs();
+    </script>
+</body>
+</html>
