@@ -14,7 +14,7 @@
 
         /* 整体背景设置 */
         body {
-            background: linear-gradient(to bottom, #ffc0cb, #A770EF);
+            background: linear-gradient(to bottom, #FDB99B, #A770EF);
             min-height: 100vh;
             padding: 20px;
             cursor: url('shubiao.png'), auto;
@@ -120,6 +120,18 @@
             color: white;
         }
 
+        /* 电脑端歌名居中显示 */
+        td:first-child {
+            text-align: center;
+        }
+
+        /* 手机端歌名靠左显示 */
+        @media (max-width: 768px) {
+            td:first-child {
+                text-align: left;
+            }
+        }
+
         /* 隐藏B列和C列 */
         th:nth-child(2),
         th:nth-child(3),
@@ -154,6 +166,12 @@
             color: white;
         }
 
+        /* 特殊按钮样式 */
+        .btn.active {
+            background: #A06705;
+            color: white;
+        }
+
         /* 分页按钮样式 */
         .pagination {
             display: flex;
@@ -168,7 +186,7 @@
             border-radius: 5px;
             background: white;
             color: #A06705;
-            cursor: pointer;
+            cursor: button;
         }
 
         .pagination button.active {
@@ -211,18 +229,6 @@
                 padding: 10px;
             }
         }
-        
-        /* 电脑端歌名居中显示 */
-td:first-child {
-    text-align: center;
-}
-
-/* 手机端歌名靠左显示 */
-@media (max-width: 768px) {
-    td:first-child {
-        text-align: left;
-    }
-}
     </style>
 </head>
 <body>
@@ -265,7 +271,10 @@ td:first-child {
             <select id="letterFilter" class="search-input">
                 <option value="">全部首字母</option>
             </select>
-            <button id="foreignFilter" class="btn">外文歌</button>
+            <div style="display: flex; gap: 10px;">
+                <button id="foreignFilter" class="btn" style="flex: 1;">外文歌</button>
+                <button id="nonForeignFilter" class="btn" style="flex: 1;">非外文歌</button>
+            </div>
             <button id="randomSong" class="btn">随心一听</button>
         </div>
     </div>
@@ -329,7 +338,7 @@ td:first-child {
         let currentFilters = {
             search: '',
             letter: '',
-            foreign: false
+            foreign: null // 外文歌状态：null（全部）、true（外文歌）、false（非外文歌）
         };
         let currentPage = 1;
         const pageSize = 50; // 每页显示50行
@@ -388,7 +397,7 @@ td:first-child {
                     song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
                     song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
                 const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
-                const matchForeign = !currentFilters.foreign || song.foreign;
+                const matchForeign = currentFilters.foreign === null || song.foreign === currentFilters.foreign;
                 return matchSearch && matchLetter && matchForeign;
             });
 
@@ -422,7 +431,7 @@ td:first-child {
                     song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
                     song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
                 const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
-                const matchForeign = !currentFilters.foreign || song.foreign;
+                const matchForeign = currentFilters.foreign === null || song.foreign === currentFilters.foreign;
                 return matchSearch && matchLetter && matchForeign;
             });
 
@@ -453,7 +462,7 @@ td:first-child {
                     song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
                     song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
                 const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
-                const matchForeign = !currentFilters.foreign || song.foreign;
+                const matchForeign = currentFilters.foreign === null || song.foreign === currentFilters.foreign;
                 return matchSearch && matchLetter && matchForeign;
             });
 
@@ -484,8 +493,18 @@ td:first-child {
         });
 
         document.getElementById('foreignFilter').addEventListener('click', () => {
-            currentFilters.foreign = !currentFilters.foreign;
-            document.getElementById('foreignFilter').classList.toggle('active');
+            currentFilters.foreign = true;
+            document.getElementById('foreignFilter').classList.add('active');
+            document.getElementById('nonForeignFilter').classList.remove('active');
+            currentPage = 1; // 重置分页
+            renderTable();
+            renderPagination();
+        });
+
+        document.getElementById('nonForeignFilter').addEventListener('click', () => {
+            currentFilters.foreign = false;
+            document.getElementById('nonForeignFilter').classList.add('active');
+            document.getElementById('foreignFilter').classList.remove('active');
             currentPage = 1; // 重置分页
             renderTable();
             renderPagination();
