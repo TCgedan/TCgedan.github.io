@@ -85,12 +85,20 @@
             text-align: center;
         }
 
-        /* 筛选区域 */
-        .filter-container {
+        /* 搜索和筛选区域 */
+        .search-container {
             background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #A06705;
+            border-radius: 25px;
+            margin-bottom: 15px;
         }
 
         /* 表格样式 */
@@ -146,63 +154,26 @@
             color: white;
         }
 
-        /* 特殊按钮样式 */
-        #randomSong {
-            background: #FDB99B;
-            color: #A06705;
-            border-color: #A06705;
+        /* 分页按钮样式 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
         }
 
-        #randomSong:hover {
-            background: #8E44AD;
-        }
-
-        /* 筛选控件样式 */
-        .filter-input {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #A06705;
-            border-radius: 25px;
-            margin-bottom: 15px;
-        }
-
-        #letterFilter {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #A06705;
-            border-radius: 25px;
-            background: white;
-            margin-bottom: 15px;
-        }
-
-        #foreignFilter {
-            width: 100%;
-            padding: 10px;
-            border: 2px solid #A06705;
-            border-radius: 25px;
+        .pagination button {
+            margin: 0 5px;
+            padding: 8px 12px;
+            border: 1px solid #A06705;
+            border-radius: 5px;
             background: white;
             color: #A06705;
             cursor: pointer;
-            transition: all 0.3s;
-            margin-bottom: 15px;
         }
 
-        #foreignFilter.active {
+        .pagination button.active {
             background: #A06705;
             color: white;
-        }
-
-        /* 隐藏表格的第二行（歌名行） */
-        tbody tr:first-child {
-            display: none;
-        }
-
-        /* 确保表头棕色区域仍然显示 */
-        thead th {
-            background: #A06705;
-            color: white;
-            padding: 15px;
-            text-align: left;
         }
 
         /* 媒体查询，针对手机端 */
@@ -227,10 +198,6 @@
                 padding: 10px;
             }
 
-            .filter-container {
-                padding: 10px;
-            }
-
             .song-container {
                 width: 100%;
                 padding: 10px;
@@ -244,6 +211,18 @@
                 padding: 10px;
             }
         }
+        
+        /* 电脑端歌名居中显示 */
+td:first-child {
+    text-align: center;
+}
+
+/* 手机端歌名靠左显示 */
+@media (max-width: 768px) {
+    td:first-child {
+        text-align: left;
+    }
+}
     </style>
 </head>
 <body>
@@ -264,6 +243,10 @@
                 <!-- 动态加载内容 -->
             </tbody>
         </table>
+        <!-- 分页按钮 -->
+        <div class="pagination" id="pagination">
+            <!-- 动态生成分页按钮 -->
+        </div>
     </div>
 
     <!-- 右侧固定区域 -->
@@ -276,14 +259,14 @@
             <a href="https://live.acfun.cn/live/2869300" class="btn" target="_blank">直播页面</a>
         </div>
 
-        <!-- 筛选区域 -->
-        <div class="filter-container">
-            <input type="text" id="searchInput" class="filter-input" placeholder="搜索歌名...">
-            <select id="letterFilter">
+        <!-- 搜索和筛选区域 -->
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="输入歌名或歌手...">
+            <select id="letterFilter" class="search-input">
                 <option value="">全部首字母</option>
             </select>
-            <button id="foreignFilter">外文歌曲</button>
-            <button id="randomSong" class="btn">随心一点</button>
+            <button id="foreignFilter" class="btn">外文歌</button>
+            <button id="randomSong" class="btn">随心一听</button>
         </div>
     </div>
 
@@ -298,13 +281,13 @@
                 const star = document.createElement('div');
                 star.className = 'star';
                 
-                const x = Math.random() * 100;
-                const y = Math.random() * 100;
+                const x = Math.random() * window.innerWidth;
+                const y = Math.random() * window.innerHeight;
                 const size = 3 + Math.random() * 8;
                 
                 star.style.cssText = `
-                    left: ${x}%;
-                    top: ${y}%;
+                    left: ${x}px;
+                    top: ${y}px;
                     width: ${size}px;
                     height: ${size}px;
                     animation-delay: ${Math.random() * 2}s;
@@ -319,18 +302,18 @@
         function startFloating(star) {
             let x = parseFloat(star.style.left);
             let y = parseFloat(star.style.top);
-            let dx = (Math.random() - 0.4) * 0.2;
-            let dy = (Math.random() - 0.4) * 0.1;
+            let dx = (Math.random() - 0.5) * 0.5;
+            let dy = (Math.random() - 0.5) * 0.5;
 
             function animate() {
                 x += dx;
                 y += dy;
                 
-                if (x < -5 || x > 105) dx *= -1;
-                if (y < -5 || y > 105) dy *= -1;
+                if (x < 0 || x > window.innerWidth) dx *= -1;
+                if (y < 0 || y > window.innerHeight) dy *= -1;
 
-                star.style.left = `${x}%`;
-                star.style.top = `${y}%`;
+                star.style.left = `${x}px`;
+                star.style.top = `${y}px`;
                 
                 requestAnimationFrame(animate);
             }
@@ -348,39 +331,40 @@
             letter: '',
             foreign: false
         };
+        let currentPage = 1;
+        const pageSize = 50; // 每页显示50行
 
         // 加载Excel数据
         function loadSongs() {
-    fetch('唐茶歌单.xlsx')
-        .then(response => response.arrayBuffer())
-        .then(data => {
-            const workbook = XLSX.read(new Uint8Array(data), { type: 'array' });
-            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-            
-            songs = jsonData
-                .filter(row => row.length >= 3 && row[0] && String(row[0]).trim())
-                .map(row => {
-                    // 彻底清理歌名，去除不可见字符和多余空格
-                    const cleanedName = String(row[0])
-                        .trim()
-                        .replace(/[\r\n\s]+/g, ' ') // 替换换行和多余空格为单个空格
-                        .normalize('NFKC'); // 规范化字符（处理全角/半角问题）
-                    return {
-                        name: cleanedName,
-                        letter: String(row[1] || '').toUpperCase().trim(),
-                        foreign: String(row[2]).toUpperCase() === 'TRUE'
-                    };
-                });
-            
-            // 调试：输出所有加载的歌名
-            console.log('加载的歌单数据:', songs.map(s => s.name));
-            
-            initLetterFilter();
-            renderTable();
-        })
-        .catch(error => console.error('加载歌单失败:', error));
-}
+            fetch('唐茶歌单.xlsx')
+                .then(response => response.arrayBuffer())
+                .then(data => {
+                    const workbook = XLSX.read(new Uint8Array(data), { type: 'array' });
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                    
+                    songs = jsonData
+                        .filter(row => row.length >= 3 && row[0] && String(row[0]).trim() && row[1] && /^[A-Za-z]$/.test(String(row[1]).trim())) // 确保B列是单个字母
+                        .map(row => {
+                            const cleanedName = String(row[0])
+                                .trim()
+                                .replace(/[\r\n\s]+/g, ' ')
+                                .normalize('NFKC');
+                            return {
+                                name: cleanedName,
+                                letter: String(row[1] || '').toUpperCase().trim(),
+                                foreign: String(row[2]).toUpperCase() === 'TRUE'
+                            };
+                        });
+                    
+                    console.log('加载的歌单数据:', songs.map(s => s.name));
+                    
+                    initLetterFilter(); // 初始化首字母筛选
+                    renderTable();
+                    renderPagination(); // 初始化分页
+                })
+                .catch(error => console.error('加载歌单失败:', error));
+        }
 
         // 初始化首字母筛选
         function initLetterFilter() {
@@ -397,97 +381,114 @@
             });
         }
 
-        // 优化后的搜索函数
-        function matchesSearch(songName, searchTerm) {
-    if (!searchTerm) return true;
-    // 清理并规范化歌名和搜索词
-    const songLower = songName.toLowerCase().replace(/[\r\n\s]+/g, ' ').trim().normalize('NFKC');
-    const searchLower = searchTerm.toLowerCase().replace(/[\r\n\s]+/g, '').trim().normalize('NFKC');
-    const result = songLower.includes(searchLower);
-    
-    // 调试：输出匹配情况
-    console.log(`搜索 "${searchLower}" 在 "${songLower}" 中的结果: ${result}`);
-    
-    return result;
-}
-
         // 渲染表格
         function renderTable() {
-    const filtered = songs.filter(song => {
-        if (!song.name || !song.letter) return false;
-        
-        const matchSearch = matchesSearch(song.name, currentFilters.search);
-        const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
-        const matchForeign = !currentFilters.foreign || song.foreign;
-        
-        return matchSearch && matchLetter && matchForeign;
-    }).sort((a, b) => {
-        const searchLower = currentFilters.search.toLowerCase().replace(/[\r\n\s]+/g, '').normalize('NFKC');
-        const posA = a.name.toLowerCase().indexOf(searchLower);
-        const posB = b.name.toLowerCase().indexOf(searchLower);
-        return posA - posB; // 按匹配位置排序
-    });
+            const filteredSongs = songs.filter(song => {
+                const matchSearch = !currentFilters.search || 
+                    song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
+                    song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
+                const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
+                const matchForeign = !currentFilters.foreign || song.foreign;
+                return matchSearch && matchLetter && matchForeign;
+            });
 
-    const tbody = document.getElementById('songList');
-    tbody.innerHTML = filtered.map(song => `
-        <tr>
-            <td>${song.name}</td>
-            <td>${song.letter}</td>
-            <td>${song.foreign ? 'TRUE' : 'FALSE'}</td>
-        </tr>
-    `).join('');
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const paginatedSongs = filteredSongs.slice(start, end);
 
-    // 调试：输出当前搜索词和匹配结果
-    console.log('当前搜索词:', currentFilters.search);
-    console.log('匹配结果:', filtered.map(s => s.name));
+            const tbody = document.getElementById('songList');
+            tbody.innerHTML = paginatedSongs.map(song => `
+                <tr>
+                    <td>${song.name}</td>
+                    <td>${song.letter}</td>
+                    <td>${song.foreign ? 'TRUE' : 'FALSE'}</td>
+                </tr>
+            `).join('');
 
-    // 绑定复制功能
-    document.querySelectorAll('#songList td:first-child').forEach(td => {
-        td.addEventListener('click', () => {
-            navigator.clipboard.writeText(td.textContent)
-                .then(() => alert(`已复制：${td.textContent}`))
-                .catch(() => alert('复制失败，请检查权限设置'));
-        });
-    });
-}
+            // 绑定复制功能
+            document.querySelectorAll('#songList td:first-child').forEach(td => {
+                td.addEventListener('click', () => {
+                    navigator.clipboard.writeText(td.textContent)
+                        .then(() => alert(`已复制：${td.textContent}`))
+                        .catch(() => alert('复制失败，请检查权限设置'));
+                });
+            });
+        }
+
+        // 渲染分页按钮
+        function renderPagination() {
+            const filteredSongs = songs.filter(song => {
+                const matchSearch = !currentFilters.search || 
+                    song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
+                    song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
+                const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
+                const matchForeign = !currentFilters.foreign || song.foreign;
+                return matchSearch && matchLetter && matchForeign;
+            });
+
+            const totalPages = Math.ceil(filteredSongs.length / pageSize);
+            const pagination = document.getElementById('pagination');
+            pagination.innerHTML = '';
+
+            for (let i = 1; i <= totalPages; i++) {
+                const button = document.createElement('button');
+                button.textContent = i;
+                if (i === currentPage) {
+                    button.classList.add('active');
+                }
+                button.addEventListener('click', () => {
+                    currentPage = i;
+                    renderTable();
+                    renderPagination();
+                    window.scrollTo({ top: 0, behavior: 'smooth' }); // 切换到页面顶部
+                });
+                pagination.appendChild(button);
+            }
+        }
 
         // 随机点歌并自动复制功能
         function randomSong() {
-    const filteredSongs = songs.filter(song => {
-        if (!song.name || !song.letter) return false;
-        
-        const matchSearch = matchesSearch(song.name, currentFilters.search);
-        const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
-        const matchForeign = !currentFilters.foreign || song.foreign;
-        return matchSearch && matchLetter && matchForeign;
-    });
+            const filteredSongs = songs.filter(song => {
+                const matchSearch = !currentFilters.search || 
+                    song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
+                    song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
+                const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
+                const matchForeign = !currentFilters.foreign || song.foreign;
+                return matchSearch && matchLetter && matchForeign;
+            });
 
-    if (filteredSongs.length > 0) {
-        const randomIndex = Math.floor(Math.random() * filteredSongs.length);
-        const song = filteredSongs[randomIndex];
-        navigator.clipboard.writeText(song.name)
-            .then(() => alert(`随机推荐并已复制：${song.name}`))
-            .catch(() => alert(`随机推荐：${song.name}，但复制失败，请检查权限设置`));
-    } else {
-        alert('当前筛选条件下没有歌曲');
-    }
-}
+            if (filteredSongs.length > 0) {
+                const randomIndex = Math.floor(Math.random() * filteredSongs.length);
+                const song = filteredSongs[randomIndex];
+                navigator.clipboard.writeText(song.name)
+                    .then(() => alert(`随机推荐并已复制：${song.name}`))
+                    .catch(() => alert(`随机推荐：${song.name}，但复制失败，请检查权限设置`));
+            } else {
+                alert('当前筛选条件下没有歌曲');
+            }
+        }
 
         // 事件监听
         document.getElementById('searchInput').addEventListener('input', e => {
             currentFilters.search = e.target.value.trim();
+            currentPage = 1; // 重置分页
             renderTable();
+            renderPagination();
         });
 
         document.getElementById('letterFilter').addEventListener('change', e => {
             currentFilters.letter = e.target.value;
+            currentPage = 1; // 重置分页
             renderTable();
+            renderPagination();
         });
 
         document.getElementById('foreignFilter').addEventListener('click', () => {
             currentFilters.foreign = !currentFilters.foreign;
             document.getElementById('foreignFilter').classList.toggle('active');
+            currentPage = 1; // 重置分页
             renderTable();
+            renderPagination();
         });
 
         document.getElementById('randomSong').addEventListener('click', randomSong);
