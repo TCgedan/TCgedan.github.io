@@ -30,7 +30,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 9999; /* 确保星光在最外层 */
+            z-index: 9999;
         }
 
         /* 单个星光粒子 */
@@ -56,12 +56,12 @@
         /* 歌单主容器 */
         .song-container {
             width: 80%;
-            background: rgba(255, 255, 255, 0.8); /* 表格透明度80% */
+            background: rgba(255, 255, 255, 0.8);
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0,0,0,0.3);
             padding: 25px;
             position: relative;
-            z-index: 1; /* 确保内容在星光下方 */
+            z-index: 1;
         }
 
         /* 右侧固定区域容器 */
@@ -73,12 +73,12 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
-            z-index: 1; /* 确保内容在星光下方 */
+            z-index: 1;
         }
 
         /* 个人信息区域 */
         .profile-container {
-            background: rgba(255, 255, 255, 0.9); /* 稍微不透明 */
+            background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0,0,0,0.3);
@@ -87,7 +87,7 @@
 
         /* 筛选区域 */
         .filter-container {
-            background: rgba(255, 255, 255, 0.9); /* 稍微不透明 */
+            background: rgba(255, 255, 255, 0.9);
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 0 20px rgba(0,0,0,0.3);
@@ -108,7 +108,7 @@
         }
 
         th {
-            background: rgba(160, 103, 5, 0.6); /* 表头透明度80% */
+            background: rgba(160, 103, 5, 0.6);
             color: white;
         }
 
@@ -191,65 +191,59 @@
             background: #A06705;
             color: white;
         }
+
         /* 隐藏表格的第二行（歌名行） */
-tbody tr:first-child {
-    display: none;
-}
+        tbody tr:first-child {
+            display: none;
+        }
 
-/* 确保表头棕色区域仍然显示 */
-thead th {
-    background: #A06705; /* 棕色背景 */
-    color: white; /* 文字颜色 */
-    padding: 15px; /* 内边距 */
-    text-align: left; /* 文字对齐 */
-}
-/* 媒体查询，针对手机端 */
-@media (max-width: 768px) {
-    /* 调整右侧固定区域的宽度 */
-    .right-side-container {
-        width: 30%; /* 调整为更小的宽度 */
-    }
+        /* 确保表头棕色区域仍然显示 */
+        thead th {
+            background: #A06705;
+            color: white;
+            padding: 15px;
+            text-align: left;
+        }
 
-    /* 调整按钮的样式 */
-    .btn {
-        font-size: 12px; /* 减小字体大小 */
-        white-space: normal; /* 允许文本换行 */
-        padding: 8px; /* 调整内边距 */
-        line-height: 1.2; /* 调整行高 */
-    }
+        /* 媒体查询，针对手机端 */
+        @media (max-width: 768px) {
+            .right-side-container {
+                width: 30%;
+            }
 
-    /* 调整头像的大小 */
-    .avatar {
-        width: 60px; /* 减小头像大小 */
-        height: 60px;
-    }
+            .btn {
+                font-size: 12px;
+                white-space: normal;
+                padding: 8px;
+                line-height: 1.2;
+            }
 
-    /* 调整个人信息区域的样式 */
-    .profile-container {
-        padding: 10px; /* 调整内边距 */
-    }
+            .avatar {
+                width: 60px;
+                height: 60px;
+            }
 
-    /* 调整筛选区域的样式 */
-    .filter-container {
-        padding: 10px; /* 调整内边距 */
-    }
+            .profile-container {
+                padding: 10px;
+            }
 
-    /* 调整表格的样式 */
-    .song-container {
-        width: 100%; /* 让表格宽度适应屏幕 */
-        padding: 10px; /* 调整内边距 */
-    }
+            .filter-container {
+                padding: 10px;
+            }
 
-    /* 调整表格的字体大小 */
-    table {
-        font-size: 14px; /* 减小字体大小 */
-    }
+            .song-container {
+                width: 100%;
+                padding: 10px;
+            }
 
-    /* 调整表头的样式 */
-    th, td {
-        padding: 10px; /* 调整内边距 */
-    }
-}
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -262,8 +256,8 @@ thead th {
             <thead>
                 <tr>
                     <th>歌名</th>
-                    <th>首字母</th>  <!-- 隐藏列 -->
-                    <th>外文</th>    <!-- 隐藏列 -->
+                    <th>首字母</th>
+                    <th>外文</th>
                 </tr>
             </thead>
             <tbody id="songList">
@@ -298,20 +292,16 @@ thead th {
         // 创建随机星光
         function createStars() {
             const container = document.getElementById('starsContainer');
-            const starCount = 100; // 星光数量增加到100个
+            const starCount = 100;
             
             for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
                 
-                // 随机初始位置
                 const x = Math.random() * 100;
                 const y = Math.random() * 100;
+                const size = 3 + Math.random() * 8;
                 
-                // 随机大小（2-5px）
-                const size = 3 + Math.random() * 8; // 调整星光大小
-                
-                // 设置样式
                 star.style.cssText = `
                     left: ${x}%;
                     top: ${y}%;
@@ -320,7 +310,6 @@ thead th {
                     animation-delay: ${Math.random() * 2}s;
                 `;
 
-                // 添加飘动动画
                 startFloating(star);
                 container.appendChild(star);
             }
@@ -330,14 +319,13 @@ thead th {
         function startFloating(star) {
             let x = parseFloat(star.style.left);
             let y = parseFloat(star.style.top);
-            let dx = (Math.random() - 0.4) * 0.2; // X轴移动速度
-            let dy = (Math.random() - 0.4) * 0.1; // Y轴移动速度
+            let dx = (Math.random() - 0.4) * 0.2;
+            let dy = (Math.random() - 0.4) * 0.1;
 
             function animate() {
                 x += dx;
                 y += dy;
                 
-                // 边界检测
                 if (x < -5 || x > 105) dx *= -1;
                 if (y < -5 || y > 105) dy *= -1;
 
@@ -363,25 +351,36 @@ thead th {
 
         // 加载Excel数据
         function loadSongs() {
-            fetch('唐茶歌单.xlsx')
-                .then(response => response.arrayBuffer())
-                .then(data => {
-                    const workbook = XLSX.read(new Uint8Array(data), { type: 'array' });
-                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                    
-                    songs = jsonData
-                        .filter(row => row.length >= 3 && row[0] && row[0].trim())
-                        .map(row => ({
-                            name: (row[0] || '').trim(),
-                            letter: (row[1] || '').toUpperCase().trim(),
-                            foreign: String(row[2]).toUpperCase() === 'TRUE'
-                        }));
-                    
-                    initLetterFilter();
-                    renderTable();
+    fetch('唐茶歌单.xlsx')
+        .then(response => response.arrayBuffer())
+        .then(data => {
+            const workbook = XLSX.read(new Uint8Array(data), { type: 'array' });
+            const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+            const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            
+            songs = jsonData
+                .filter(row => row.length >= 3 && row[0] && String(row[0]).trim())
+                .map(row => {
+                    // 彻底清理歌名，去除不可见字符和多余空格
+                    const cleanedName = String(row[0])
+                        .trim()
+                        .replace(/[\r\n\s]+/g, ' ') // 替换换行和多余空格为单个空格
+                        .normalize('NFKC'); // 规范化字符（处理全角/半角问题）
+                    return {
+                        name: cleanedName,
+                        letter: String(row[1] || '').toUpperCase().trim(),
+                        foreign: String(row[2]).toUpperCase() === 'TRUE'
+                    };
                 });
-        }
+            
+            // 调试：输出所有加载的歌名
+            console.log('加载的歌单数据:', songs.map(s => s.name));
+            
+            initLetterFilter();
+            renderTable();
+        })
+        .catch(error => console.error('加载歌单失败:', error));
+}
 
         // 初始化首字母筛选
         function initLetterFilter() {
@@ -398,63 +397,85 @@ thead th {
             });
         }
 
+        // 优化后的搜索函数
+        function matchesSearch(songName, searchTerm) {
+    if (!searchTerm) return true;
+    // 清理并规范化歌名和搜索词
+    const songLower = songName.toLowerCase().replace(/[\r\n\s]+/g, ' ').trim().normalize('NFKC');
+    const searchLower = searchTerm.toLowerCase().replace(/[\r\n\s]+/g, '').trim().normalize('NFKC');
+    const result = songLower.includes(searchLower);
+    
+    // 调试：输出匹配情况
+    console.log(`搜索 "${searchLower}" 在 "${songLower}" 中的结果: ${result}`);
+    
+    return result;
+}
+
         // 渲染表格
         function renderTable() {
-            const filtered = songs.filter(song => {
-                if (!song.name || !song.letter) return false;
-                
-                const matchSearch = song.name.toLowerCase().includes(
-                    currentFilters.search.toLowerCase()
-                );
-                const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
-                const matchForeign = !currentFilters.foreign || song.foreign;
-                return matchSearch && matchLetter && matchForeign;
-            });
-
-            const tbody = document.getElementById('songList');
-            tbody.innerHTML = filtered.map(song => `
-                <tr>
-                    <td>${song.name}</td>
-                    <td>${song.letter}</td>  <!-- 隐藏列 -->
-                    <td>${song.foreign ? 'TRUE' : 'FALSE'}</td>  <!-- 隐藏列 -->
-                </tr>
-            `).join('');
-
-            // 绑定复制功能
-document.querySelectorAll('#songList td:first-child').forEach(td => {
-    td.addEventListener('click', () => {
-        navigator.clipboard.writeText(td.textContent)
-            .then(() => alert(`已复制：${td.textContent}`))
-            .catch(() => alert('复制失败，请检查权限设置'));
+    const filtered = songs.filter(song => {
+        if (!song.name || !song.letter) return false;
+        
+        const matchSearch = matchesSearch(song.name, currentFilters.search);
+        const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
+        const matchForeign = !currentFilters.foreign || song.foreign;
+        
+        return matchSearch && matchLetter && matchForeign;
+    }).sort((a, b) => {
+        const searchLower = currentFilters.search.toLowerCase().replace(/[\r\n\s]+/g, '').normalize('NFKC');
+        const posA = a.name.toLowerCase().indexOf(searchLower);
+        const posB = b.name.toLowerCase().indexOf(searchLower);
+        return posA - posB; // 按匹配位置排序
     });
-});
-        }
 
-        // 随机点歌功能
+    const tbody = document.getElementById('songList');
+    tbody.innerHTML = filtered.map(song => `
+        <tr>
+            <td>${song.name}</td>
+            <td>${song.letter}</td>
+            <td>${song.foreign ? 'TRUE' : 'FALSE'}</td>
+        </tr>
+    `).join('');
+
+    // 调试：输出当前搜索词和匹配结果
+    console.log('当前搜索词:', currentFilters.search);
+    console.log('匹配结果:', filtered.map(s => s.name));
+
+    // 绑定复制功能
+    document.querySelectorAll('#songList td:first-child').forEach(td => {
+        td.addEventListener('click', () => {
+            navigator.clipboard.writeText(td.textContent)
+                .then(() => alert(`已复制：${td.textContent}`))
+                .catch(() => alert('复制失败，请检查权限设置'));
+        });
+    });
+}
+
+        // 随机点歌并自动复制功能
         function randomSong() {
-            const filteredSongs = songs.filter(song => {
-                if (!song.name || !song.letter) return false;
-                
-                const matchSearch = song.name.toLowerCase().includes(
-                    currentFilters.search.toLowerCase()
-                );
-                const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
-                const matchForeign = !currentFilters.foreign || song.foreign;
-                return matchSearch && matchLetter && matchForeign;
-            });
+    const filteredSongs = songs.filter(song => {
+        if (!song.name || !song.letter) return false;
+        
+        const matchSearch = matchesSearch(song.name, currentFilters.search);
+        const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
+        const matchForeign = !currentFilters.foreign || song.foreign;
+        return matchSearch && matchLetter && matchForeign;
+    });
 
-            if (filteredSongs.length > 0) {
-                const randomIndex = Math.floor(Math.random() * filteredSongs.length);
-                const song = filteredSongs[randomIndex];
-                alert(`随机推荐：${song.name}`);
-            } else {
-                alert('当前筛选条件下没有歌曲');
-            }
-        }
+    if (filteredSongs.length > 0) {
+        const randomIndex = Math.floor(Math.random() * filteredSongs.length);
+        const song = filteredSongs[randomIndex];
+        navigator.clipboard.writeText(song.name)
+            .then(() => alert(`随机推荐并已复制：${song.name}`))
+            .catch(() => alert(`随机推荐：${song.name}，但复制失败，请检查权限设置`));
+    } else {
+        alert('当前筛选条件下没有歌曲');
+    }
+}
 
         // 事件监听
         document.getElementById('searchInput').addEventListener('input', e => {
-            currentFilters.search = e.target.value;
+            currentFilters.search = e.target.value.trim();
             renderTable();
         });
 
