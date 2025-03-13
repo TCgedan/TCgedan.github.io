@@ -112,7 +112,43 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.3);
         }
 
+        /* 搜索框容器 */
+        .search-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
         .search-input {
+            width: 100%;
+            padding: 10px 50px 10px 10px; /* 右侧留出按钮空间 */
+            border: 2px solid #A06705;
+            border-radius: 25px;
+            box-sizing: border-box;
+        }
+
+        /* 嵌入搜索框的随机按钮 */
+        .search-random-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 5px 10px;
+            border: none;
+            border-radius: 20px;
+            background: #A06705;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 14px;
+        }
+
+        .search-random-btn:hover {
+            background: #8A5A04;
+        }
+
+        /* 筛选下拉框样式 */
+        .search-input-filter {
             width: 100%;
             padding: 10px;
             border: 2px solid #A06705;
@@ -122,7 +158,7 @@
 
         /* 表格样式 - 添加毛玻璃效果和透明度 */
         .song-table-container {
-            background: rgba(255, 255, 255, 0.6); /* 设置透明度为80% */
+            background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             border-radius: 10px;
@@ -149,7 +185,7 @@
         /* 电脑端 - 三列排版 */
         @media (min-width: 769px) {
             .song-item {
-                width: calc(32.33% - 20px); /* 每列占33.33%，减去间距 */
+                width: calc(32.33% - 20px);
                 margin: 10px;
             }
         }
@@ -277,15 +313,19 @@
 
         <!-- 搜索和筛选区域 -->
         <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="输入歌名或歌手...">
-            <select id="letterFilter" class="search-input">
+            <!-- 搜索框和随机按钮容器 -->
+            <div class="search-wrapper">
+                <input type="text" id="searchInput" class="search-input" placeholder="输入歌名或歌手...">
+                <button id="randomSongSelect" class="search-random-btn">随机</button>
+            </div>
+            <select id="letterFilter" class="search-input-filter">
                 <option value="">全部首字母</option>
             </select>
             <div style="display: flex; gap: 10px;">
                 <button id="foreignFilter" class="btn" style="flex: 1;">外文歌</button>
                 <button id="nonForeignFilter" class="btn" style="flex: 1;">非外文歌</button>
             </div>
-            <button id="randomSong" class="btn">随心一听</button>
+            <button id="randomLink" class="btn">随心一听</button>
         </div>
     </div>
 
@@ -317,7 +357,7 @@
             }
         }
 
-        // 飘动动画效果
+        // 星光飘动动画效果
         function startFloating(star) {
             let x = parseFloat(star.style.left);
             let y = parseFloat(star.style.top);
@@ -477,7 +517,7 @@
         }
 
         // 随机点歌并自动复制功能
-        function randomSong() {
+        function randomSongSelect() {
             const filteredSongs = songs.filter(song => {
                 const matchSearch = !currentFilters.search || 
                     song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
@@ -501,6 +541,112 @@
                 showCopyToast('当前筛选条件下没有歌曲');
             }
         }
+
+        // 随机打开子窗口
+        const links = [
+            "https://www.acfun.cn/v/ac46700221",
+            "https://www.acfun.cn/v/ac46174886",
+            "https://www.acfun.cn/v/ac46066884",
+            "https://www.acfun.cn/v/ac45218525",
+            "https://www.acfun.cn/v/ac44860789",
+            "https://www.acfun.cn/v/ac44572518",
+            "https://www.acfun.cn/v/ac44427949",
+            "https://www.acfun.cn/v/ac44395798",
+            "https://www.acfun.cn/v/ac44354813",
+            "https://www.acfun.cn/v/ac43713975",
+            "https://www.acfun.cn/v/ac43274127",
+            "https://www.acfun.cn/v/ac42727356",
+            "https://www.acfun.cn/v/ac42759454",
+            "https://www.acfun.cn/v/ac42503113",
+            "https://www.acfun.cn/v/ac42053840",
+            "https://www.acfun.cn/v/ac41745626",
+            "https://www.acfun.cn/v/ac41424633",
+            "https://www.acfun.cn/v/ac41353599",
+            "https://www.acfun.cn/v/ac41345188",
+            "https://www.acfun.cn/v/ac41221200",
+            "https://www.acfun.cn/v/ac41147253",
+            "https://www.acfun.cn/v/ac40905493",
+            "https://www.acfun.cn/v/ac40896349",
+            "https://www.acfun.cn/v/ac40658753",
+            "https://www.acfun.cn/v/ac40119099",
+            "https://www.acfun.cn/v/ac39905941",
+            "https://www.acfun.cn/v/ac39885894",
+            "https://www.acfun.cn/v/ac39858418",
+            "https://www.acfun.cn/v/ac39646375",
+            "https://www.acfun.cn/v/ac39339946",
+            "https://www.acfun.cn/v/ac36677668",
+            "https://www.acfun.cn/v/ac35103656",
+            "https://www.acfun.cn/v/ac35097024",
+            "https://www.acfun.cn/v/ac34961706",
+            "https://www.acfun.cn/v/ac34539448",
+            "https://www.acfun.cn/v/ac33803845",
+            "https://www.acfun.cn/v/ac33502206",
+            "https://www.acfun.cn/v/ac33778897",
+            "https://www.acfun.cn/v/ac31322786",
+            "https://www.acfun.cn/v/ac33212229",
+            "https://www.acfun.cn/v/ac17752789",
+            "https://www.acfun.cn/v/ac23878317",
+            "https://www.acfun.cn/v/ac21827862",
+            "https://www.acfun.cn/v/ac16507017",
+            "https://www.acfun.cn/v/ac15300595",
+            "https://www.acfun.cn/v/ac13906817",
+            "https://www.acfun.cn/v/ac3743220",
+            "https://www.acfun.cn/v/ac2532968",
+            "https://www.acfun.cn/v/ac16635884",
+            "https://www.acfun.cn/v/ac14645671",
+            "https://www.acfun.cn/v/ac23370575_2",
+            "https://www.acfun.cn/v/ac14645937",
+            "https://www.acfun.cn/v/ac15543154",
+            "https://www.acfun.cn/v/ac15749734",
+            "https://www.acfun.cn/v/ac29940341",
+            "https://www.acfun.cn/v/ac19256450",
+            "https://www.acfun.cn/v/ac20319992",
+            "https://www.acfun.cn/v/ac32962922",
+            "https://www.acfun.cn/v/ac32604996",
+            "https://www.acfun.cn/v/ac15955526",
+            "https://www.acfun.cn/v/ac15895335",
+            "https://www.acfun.cn/v/ac24863941",
+            "https://www.acfun.cn/v/ac16060218",
+            "https://www.acfun.cn/v/ac18276431",
+            "https://www.acfun.cn/v/ac18090620",
+            "https://www.acfun.cn/v/ac19038752",
+            "https://www.acfun.cn/v/ac25923382",
+            "https://www.acfun.cn/v/ac32772064",
+            "https://www.acfun.cn/v/ac26359677",
+            "https://www.acfun.cn/v/ac37425906",
+            "https://www.acfun.cn/v/ac30946792",
+            "https://www.acfun.cn/v/ac34328450",
+            "https://www.acfun.cn/v/ac28331952",
+            "https://www.acfun.cn/v/ac31429905",
+            "https://www.acfun.cn/v/ac30198620",
+            "https://www.acfun.cn/v/ac30516241",
+            "https://www.acfun.cn/v/ac29467030",
+            "https://www.acfun.cn/v/ac32430732",
+            "https://www.acfun.cn/v/ac29641275",
+            "https://www.acfun.cn/v/ac31238572",
+            "https://www.acfun.cn/v/ac31752232",
+            "https://www.acfun.cn/v/ac31135634"
+        ];
+
+        // 随机打开子窗口（右下角）并让子窗口自动下滑
+function randomLink() {
+    const randomIndex = Math.floor(Math.random() * links.length);
+    const windowWidth = 860;
+    const windowHeight = 700;
+    const leftPosition = window.screen.width - windowWidth - 20;
+    const topPosition = window.screen.height - windowHeight - 80;
+    // 打开子窗口并获取引用
+    const childWindow = window.open(links[randomIndex], '_blank', `width=${windowWidth},height=${windowHeight},left=${leftPosition},top=${topPosition}`);
+
+}
+
+        // 修改子窗口位置：调整 leftPosition 和 topPosition 的值
+        // 例如，若需左上角，将 leftPosition 和 topPosition 设为 20
+        // const leftPosition = 20;
+        // const topPosition = 20;
+
+        // 修改滚动距离：调整 window.scrollBy 中的 top 值
+        // 例如，若需每次滚动更多距离，可改为 window.innerHeight
 
         // 事件监听
         document.getElementById('searchInput').addEventListener('input', e => {
@@ -535,10 +681,12 @@
             renderPagination();
         });
 
-        document.getElementById('randomSong').addEventListener('click', randomSong);
+        document.getElementById('randomLink').addEventListener('click', randomLink);
+        document.getElementById('randomSongSelect').addEventListener('click', randomSongSelect);
 
         // 初始化加载
         loadSongs();
     </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91fd08e59e50afba',t:'MTc0MTg4NDY3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
