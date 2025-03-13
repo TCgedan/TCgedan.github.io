@@ -30,7 +30,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 9999;
+            z-index: 0;
         }
 
         /* 单个星光粒子 */
@@ -51,6 +51,25 @@
                 opacity: 1;
                 transform: scale(1.2);
             }
+        }
+
+        /* 自定义复制提示框 */
+        .copy-toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+            z-index: 10000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .copy-toast.show {
+            opacity: 1;
         }
 
         /* 歌单主容器 */
@@ -101,35 +120,50 @@
             margin-bottom: 15px;
         }
 
-        /* 表格样式 */
-        table {
-            width: 100%;
-            border-collapse: collapse;
+        /* 表格样式 - 添加毛玻璃效果和透明度 */
+        .song-table-container {
+            background: rgba(255, 255, 255, 0.8); /* 设置透明度为80% */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 10px;
+            padding: 10px;
             margin-top: 20px;
-            border: 2px solid #A06705;
         }
 
-        th, td {
-            border: 1px solid #A06755;
+        /* 歌曲列表容器 */
+        .song-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* 每首歌的卡片样式 */
+        .song-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
             padding: 15px;
-            text-align: left;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
 
-        th {
-            background: rgba(160, 103, 5, 0.6);
-            color: white;
+        /* 电脑端 - 三列排版 */
+        @media (min-width: 769px) {
+            .song-item {
+                width: calc(32.33% - 20px); /* 每列占33.33%，减去间距 */
+                margin: 10px;
+            }
         }
 
-        /* 隐藏B列和C列 */
-        th:nth-child(2),
-        th:nth-child(3),
-        td:nth-child(2),
-        td:nth-child(3) {
-            display: none;
+        /* 手机端 - 单列排版 */
+        @media (max-width: 768px) {
+            .song-item {
+                width: 100%;
+                margin: 5px 0;
+            }
         }
 
         /* 行悬停效果 */
-        tr:hover td {
+        .song-item:hover {
             background: rgba(160, 103, 5, 0.1);
         }
 
@@ -150,6 +184,11 @@
         }
 
         .btn:hover {
+            background: #A06705;
+            color: white;
+        }
+
+        .btn.active {
             background: #A06705;
             color: white;
         }
@@ -202,47 +241,24 @@
                 width: 100%;
                 padding: 10px;
             }
-
-            table {
-                font-size: 14px;
-            }
-
-            th, td {
-                padding: 10px;
-            }
         }
-        
-        /* 电脑端歌名居中显示 */
-td:first-child {
-    text-align: center;
-}
-
-/* 手机端歌名靠左显示 */
-@media (max-width: 768px) {
-    td:first-child {
-        text-align: left;
-    }
-}
     </style>
 </head>
 <body>
     <!-- 星光容器 -->
     <div class="stars-container" id="starsContainer"></div>
 
+    <!-- 复制提示框 -->
+    <div class="copy-toast" id="copyToast"></div>
+
     <!-- 歌单区域 -->
     <div class="song-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>歌名</th>
-                    <th>首字母</th>
-                    <th>外文</th>
-                </tr>
-            </thead>
-            <tbody id="songList">
+        <!-- 新的歌曲列表容器 -->
+        <div class="song-table-container">
+            <div class="song-list" id="songList">
                 <!-- 动态加载内容 -->
-            </tbody>
-        </table>
+            </div>
+        </div>
         <!-- 分页按钮 -->
         <div class="pagination" id="pagination">
             <!-- 动态生成分页按钮 -->
@@ -265,7 +281,10 @@ td:first-child {
             <select id="letterFilter" class="search-input">
                 <option value="">全部首字母</option>
             </select>
-            <button id="foreignFilter" class="btn">外文歌</button>
+            <div style="display: flex; gap: 10px;">
+                <button id="foreignFilter" class="btn" style="flex: 1;">外文歌</button>
+                <button id="nonForeignFilter" class="btn" style="flex: 1;">非外文歌</button>
+            </div>
             <button id="randomSong" class="btn">随心一听</button>
         </div>
     </div>
@@ -321,6 +340,17 @@ td:first-child {
             requestAnimationFrame(animate);
         }
 
+        // 显示复制提示
+        function showCopyToast(message) {
+            const toast = document.getElementById('copyToast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
         // 初始化星光
         createStars();
 
@@ -329,10 +359,10 @@ td:first-child {
         let currentFilters = {
             search: '',
             letter: '',
-            foreign: false
+            foreign: null
         };
         let currentPage = 1;
-        const pageSize = 50; // 每页显示50行
+        const pageSize = 50;
 
         // 加载Excel数据
         function loadSongs() {
@@ -344,7 +374,7 @@ td:first-child {
                     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
                     
                     songs = jsonData
-                        .filter(row => row.length >= 3 && row[0] && String(row[0]).trim() && row[1] && /^[A-Za-z]$/.test(String(row[1]).trim())) // 确保B列是单个字母
+                        .filter(row => row.length >= 3 && row[0] && String(row[0]).trim() && row[1] && /^[A-Za-z]$/.test(String(row[1]).trim()))
                         .map(row => {
                             const cleanedName = String(row[0])
                                 .trim()
@@ -357,11 +387,9 @@ td:first-child {
                             };
                         });
                     
-                    console.log('加载的歌单数据:', songs.map(s => s.name));
-                    
-                    initLetterFilter(); // 初始化首字母筛选
+                    initLetterFilter();
                     renderTable();
-                    renderPagination(); // 初始化分页
+                    renderPagination();
                 })
                 .catch(error => console.error('加载歌单失败:', error));
         }
@@ -381,14 +409,14 @@ td:first-child {
             });
         }
 
-        // 渲染表格
+        // 渲染歌曲列表
         function renderTable() {
             const filteredSongs = songs.filter(song => {
                 const matchSearch = !currentFilters.search || 
                     song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
                     song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
                 const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
-                const matchForeign = !currentFilters.foreign || song.foreign;
+                const matchForeign = currentFilters.foreign === null || song.foreign === currentFilters.foreign;
                 return matchSearch && matchLetter && matchForeign;
             });
 
@@ -396,21 +424,23 @@ td:first-child {
             const end = start + pageSize;
             const paginatedSongs = filteredSongs.slice(start, end);
 
-            const tbody = document.getElementById('songList');
-            tbody.innerHTML = paginatedSongs.map(song => `
-                <tr>
-                    <td>${song.name}</td>
-                    <td>${song.letter}</td>
-                    <td>${song.foreign ? 'TRUE' : 'FALSE'}</td>
-                </tr>
+            const songList = document.getElementById('songList');
+            songList.innerHTML = paginatedSongs.map(song => `
+                <div class="song-item">
+                    ${song.name}
+                </div>
             `).join('');
 
             // 绑定复制功能
-            document.querySelectorAll('#songList td:first-child').forEach(td => {
-                td.addEventListener('click', () => {
-                    navigator.clipboard.writeText(td.textContent)
-                        .then(() => alert(`已复制：${td.textContent}`))
-                        .catch(() => alert('复制失败，请检查权限设置'));
+            document.querySelectorAll('.song-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    navigator.clipboard.writeText(item.textContent.trim())
+                        .then(() => {
+                            showCopyToast(`已复制：点歌@${item.textContent.trim()}`);
+                        })
+                        .catch(() => {
+                            showCopyToast('复制失败，请检查权限设置');
+                        });
                 });
             });
         }
@@ -422,7 +452,7 @@ td:first-child {
                     song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
                     song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
                 const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
-                const matchForeign = !currentFilters.foreign || song.foreign;
+                const matchForeign = currentFilters.foreign === null || song.foreign === currentFilters.foreign;
                 return matchSearch && matchLetter && matchForeign;
             });
 
@@ -440,7 +470,7 @@ td:first-child {
                     currentPage = i;
                     renderTable();
                     renderPagination();
-                    window.scrollTo({ top: 0, behavior: 'smooth' }); // 切换到页面顶部
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 });
                 pagination.appendChild(button);
             }
@@ -453,7 +483,7 @@ td:first-child {
                     song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
                     song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
                 const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
-                const matchForeign = !currentFilters.foreign || song.foreign;
+                const matchForeign = currentFilters.foreign === null || song.foreign === currentFilters.foreign;
                 return matchSearch && matchLetter && matchForeign;
             });
 
@@ -461,32 +491,46 @@ td:first-child {
                 const randomIndex = Math.floor(Math.random() * filteredSongs.length);
                 const song = filteredSongs[randomIndex];
                 navigator.clipboard.writeText(song.name)
-                    .then(() => alert(`随机推荐并已复制：${song.name}`))
-                    .catch(() => alert(`随机推荐：${song.name}，但复制失败，请检查权限设置`));
+                    .then(() => {
+                        showCopyToast(`已复制：点歌@${song.name}`);
+                    })
+                    .catch(() => {
+                        showCopyToast(`随机推荐：${song.name}，但复制失败`);
+                    });
             } else {
-                alert('当前筛选条件下没有歌曲');
+                showCopyToast('当前筛选条件下没有歌曲');
             }
         }
 
         // 事件监听
         document.getElementById('searchInput').addEventListener('input', e => {
             currentFilters.search = e.target.value.trim();
-            currentPage = 1; // 重置分页
+            currentPage = 1;
             renderTable();
             renderPagination();
         });
 
         document.getElementById('letterFilter').addEventListener('change', e => {
             currentFilters.letter = e.target.value;
-            currentPage = 1; // 重置分页
+            currentPage = 1;
             renderTable();
             renderPagination();
         });
 
         document.getElementById('foreignFilter').addEventListener('click', () => {
-            currentFilters.foreign = !currentFilters.foreign;
-            document.getElementById('foreignFilter').classList.toggle('active');
-            currentPage = 1; // 重置分页
+            currentFilters.foreign = true;
+            document.getElementById('foreignFilter').classList.add('active');
+            document.getElementById('nonForeignFilter').classList.remove('active');
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        });
+
+        document.getElementById('nonForeignFilter').addEventListener('click', () => {
+            currentFilters.foreign = false;
+            document.getElementById('nonForeignFilter').classList.add('active');
+            document.getElementById('foreignFilter').classList.remove('active');
+            currentPage = 1;
             renderTable();
             renderPagination();
         });
