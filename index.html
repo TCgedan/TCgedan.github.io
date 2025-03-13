@@ -156,6 +156,12 @@
             margin-bottom: 15px;
         }
 
+        /* 外文歌和非外文歌按钮容器 */
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
         /* 表格样式 - 添加毛玻璃效果和透明度 */
         .song-table-container {
             background: rgba(255, 255, 255, 0.6);
@@ -190,11 +196,67 @@
             }
         }
 
-        /* 手机端 - 单列排版 */
+        /* 手机端 - 单列排版及按钮调整 */
         @media (max-width: 768px) {
-            .song-item {
+            .right-side-container {
+                width: 30%;
+            }
+
+            .btn {
+                font-size: 12px;
+                white-space: normal;
+                padding: 8px;
+                line-height: 1.2;
+            }
+
+            .avatar {
+                width: 60px;
+                height: 60px;
+            }
+
+            .profile-container {
+                padding: 10px;
+            }
+            .song-list {
+        flex-direction: column; /* 强制纵向排列 */
+        gap: 10px; /* 保持垂直间距 */
+    }
+    .song-item {
+        width: 100%; /* 确保单列 */
+        margin: 5px 0; /* 垂直间距 */
+    }
+
+            .song-container {
                 width: 100%;
-                margin: 5px 0;
+                padding: 10px;
+            }
+
+            /* 搜索框恢复默认样式，去掉右侧按钮空间 */
+            .search-input {
+                padding: 10px;
+            }
+
+            /* 随机按钮单独摆放在搜索框下方 */
+            .search-random-btn {
+                position: static;
+                transform: none;
+                width: 100%;
+                margin-top: 10px;
+                padding: 10px;
+                border: 2px solid #A06705;
+                border-radius: 25px;
+                background: white;
+                color: #A06705;
+            }
+
+            .search-random-btn:hover {
+                background: #A06705;
+                color: white;
+            }
+
+            /* 外文歌和非外文歌按钮上下排列 */
+            .filter-buttons {
+                flex-direction: column;
             }
         }
 
@@ -250,34 +312,6 @@
             background: #A06705;
             color: white;
         }
-
-        /* 媒体查询，针对手机端 */
-        @media (max-width: 768px) {
-            .right-side-container {
-                width: 30%;
-            }
-
-            .btn {
-                font-size: 12px;
-                white-space: normal;
-                padding: 8px;
-                line-height: 1.2;
-            }
-
-            .avatar {
-                width: 60px;
-                height: 60px;
-            }
-
-            .profile-container {
-                padding: 10px;
-            }
-
-            .song-container {
-                width: 100%;
-                padding: 10px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -321,7 +355,7 @@
             <select id="letterFilter" class="search-input-filter">
                 <option value="">全部首字母</option>
             </select>
-            <div style="display: flex; gap: 10px;">
+            <div class="filter-buttons">
                 <button id="foreignFilter" class="btn" style="flex: 1;">外文歌</button>
                 <button id="nonForeignFilter" class="btn" style="flex: 1;">非外文歌</button>
             </div>
@@ -628,25 +662,29 @@
             "https://www.acfun.cn/v/ac31135634"
         ];
 
-        // 随机打开子窗口（右下角）并让子窗口自动下滑
-function randomLink() {
-    const randomIndex = Math.floor(Math.random() * links.length);
-    const windowWidth = 860;
-    const windowHeight = 700;
-    const leftPosition = window.screen.width - windowWidth - 20;
-    const topPosition = window.screen.height - windowHeight - 80;
-    // 打开子窗口并获取引用
-    const childWindow = window.open(links[randomIndex], '_blank', `width=${windowWidth},height=${windowHeight},left=${leftPosition},top=${topPosition}`);
-
-}
-
-        // 修改子窗口位置：调整 leftPosition 和 topPosition 的值
-        // 例如，若需左上角，将 leftPosition 和 topPosition 设为 20
-        // const leftPosition = 20;
-        // const topPosition = 20;
-
-        // 修改滚动距离：调整 window.scrollBy 中的 top 值
-        // 例如，若需每次滚动更多距离，可改为 window.innerHeight
+        function randomLink() {
+            const randomIndex = Math.floor(Math.random() * links.length);
+            const windowWidth = 860; // 修改子窗口宽度为 860
+            const windowHeight = 700; // 修改子窗口高度为 700
+            const leftPosition = window.screen.width - windowWidth - 20;
+            const topPosition = window.screen.height - windowHeight - 80;
+            try {
+                const childWindow = window.open(links[randomIndex], '_blank', `width=${windowWidth},height=${windowHeight},left=${leftPosition},top=${topPosition}`);
+                if (childWindow) {
+                    showCopyToast('子窗口已打开，请手动滚动查看内容！');
+                    childWindow.onload = () => {
+                        showCopyToast('子窗口加载完成！');
+                    };
+                    childWindow.onerror = () => {
+                        showCopyToast('子窗口加载失败，请检查网络或链接！');
+                    };
+                } else {
+                    showCopyToast('子窗口打开失败，请检查浏览器设置或弹出拦截！');
+                }
+            } catch (error) {
+                showCopyToast('打开子窗口时出错：' + error.message);
+            }
+        }
 
         // 事件监听
         document.getElementById('searchInput').addEventListener('input', e => {
