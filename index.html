@@ -671,7 +671,7 @@
             try {
                 const childWindow = window.open(links[randomIndex], '_blank', `width=${windowWidth},height=${windowHeight},left=${leftPosition},top=${topPosition}`);
                 if (childWindow) {
-                    showCopyToast('子窗口已打开，请手动滚动查看内容！');
+                   
                     childWindow.onload = () => {
                         showCopyToast('子窗口加载完成！');
                     };
