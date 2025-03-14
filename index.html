@@ -484,40 +484,42 @@
         }
 
         // 渲染歌曲列表
-        function renderTable() {
-            const filteredSongs = songs.filter(song => {
-                const matchSearch = !currentFilters.search || 
-                    song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
-                    song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
-                const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
-                const matchForeign = currentFilters.foreign === null || song.foreign === currentFilters.foreign;
-                return matchSearch && matchLetter && matchForeign;
-            });
+function renderTable() {
+    const filteredSongs = songs.filter(song => {
+        const matchSearch = !currentFilters.search || 
+            song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
+            song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
+        const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
+        const matchForeign = currentFilters.foreign === null || song.foreign === currentFilters.foreign;
+        return matchSearch && matchLetter && matchForeign;
+    });
 
-            const start = (currentPage - 1) * pageSize;
-            const end = start + pageSize;
-            const paginatedSongs = filteredSongs.slice(start, end);
+    const start = (currentPage - 1) * pageSize;
+    const end = start + pageSize;
+    const paginatedSongs = filteredSongs.slice(start, end);
 
-            const songList = document.getElementById('songList');
-            songList.innerHTML = paginatedSongs.map(song => `
-                <div class="song-item">
-                    ${song.name}
-                </div>
-            `).join('');
+    const songList = document.getElementById('songList');
+    songList.innerHTML = paginatedSongs.map(song => `
+        <div class="song-item">
+            ${song.name}
+        </div>
+    `).join('');
 
-            // 绑定复制功能
-            document.querySelectorAll('.song-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    navigator.clipboard.writeText(item.textContent.trim())
-                        .then(() => {
-                            showCopyToast(`已复制：点歌@${item.textContent.trim()}`);
-                        })
-                        .catch(() => {
-                            showCopyToast('复制失败，请检查权限设置');
-                        });
+    // 绑定复制功能
+    document.querySelectorAll('.song-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const songName = item.textContent.trim(); // 获取歌曲名
+            const formattedText = `点歌@${songName}`; // 格式化文本
+            navigator.clipboard.writeText(formattedText) // 复制格式化后的文本
+                .then(() => {
+                    showCopyToast(`已复制：${formattedText}`); // 显示提示
+                })
+                .catch(() => {
+                    showCopyToast('复制失败，请检查权限设置'); // 显示错误提示
                 });
-            });
-        }
+        });
+    });
+}
 
         // 渲染分页按钮
         function renderPagination() {
