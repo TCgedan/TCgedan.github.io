@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>唐茶歌单</title>
     <style>
-		        /* 基础样式 */
+        /* 基础样式 */
         * {
             margin: 0;
             padding: 0;
@@ -14,7 +14,12 @@
 
         body {
             font-family: Arial, sans-serif;
-            overflow: hidden;
+            background: linear-gradient(to bottom, #ffc0cb, #A770EF);
+            min-height: 100vh;
+            padding: 20px;
+            cursor: url('shubiao.png'), auto;
+            position: relative;
+            overflow-y: auto; /* 修改为允许垂直滚动 */
         }
 
         /* 开场动画容器 */
@@ -32,22 +37,15 @@
             align-items: center;
             flex-direction: column;
             z-index: 1000;
-            overflow: hidden;
             opacity: 1;
             transition: opacity 1.5s ease;
         }
 
         /* 背景渐变动画 */
         @keyframes gradientBG {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         /* 文字样式 */
@@ -59,11 +57,8 @@
             animation: fadeIn 2s forwards;
         }
 
-        /* 文字渐显动画 */
         @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
+            to { opacity: 1; }
         }
 
         /* 进度条容器 */
@@ -76,7 +71,6 @@
             overflow: hidden;
         }
 
-        /* 进度条填充 */
         .progress-bar-fill {
             width: 0;
             height: 100%;
@@ -85,11 +79,8 @@
             animation: fillProgress 3s forwards;
         }
 
-        /* 进度条填充动画 */
         @keyframes fillProgress {
-            to {
-                width: 100%;
-            }
+            to { width: 100%; }
         }
 
         /* 起泡效果 */
@@ -110,35 +101,10 @@
             animation: bubble 10s linear infinite;
         }
 
-        /* 起泡动画 */
         @keyframes bubble {
-            0% {
-                transform: translateY(0);
-                opacity: 0;
-            }
-            50% {
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-100vh);
-                opacity: 0;
-            }
-        }
-        /* 基础重置 */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* 整体背景设置 */
-        body {
-            background: linear-gradient(to bottom, #ffc0cb, #A770EF);
-            min-height: 100vh;
-            padding: 20px;
-            cursor: url('shubiao.png'), auto;
-            position: relative;
-            overflow-x: hidden;
+            0% { transform: translateY(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh); opacity: 0; }
         }
 
         /* 星光容器 */
@@ -152,7 +118,6 @@
             z-index: 0;
         }
 
-        /* 单个星光粒子 */
         .star {
             position: absolute;
             background: rgba(255, 255, 255, 0.8);
@@ -160,16 +125,9 @@
             animation: twinkle 3s infinite ease-in-out;
         }
 
-        /* 星光动画 */
         @keyframes twinkle {
-            0%, 100% {
-                opacity: 0.3;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.2);
-            }
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
         }
 
         /* 自定义复制提示框 */
@@ -231,7 +189,6 @@
             box-shadow: 0 0 20px rgba(0,0,0,0.3);
         }
 
-        /* 搜索框容器 */
         .search-wrapper {
             position: relative;
             width: 100%;
@@ -240,13 +197,12 @@
 
         .search-input {
             width: 100%;
-            padding: 10px 50px 10px 10px; /* 右侧留出按钮空间 */
+            padding: 10px 50px 10px 10px;
             border: 2px solid #A06705;
             border-radius: 25px;
             box-sizing: border-box;
         }
 
-        /* 嵌入搜索框的随机按钮 */
         .search-random-btn {
             position: absolute;
             right: 5px;
@@ -266,7 +222,6 @@
             background: #8A5A04;
         }
 
-        /* 筛选下拉框样式 */
         .search-input-filter {
             width: 100%;
             padding: 10px;
@@ -275,13 +230,11 @@
             margin-bottom: 15px;
         }
 
-        /* 外文歌和非外文歌按钮容器 */
         .filter-buttons {
             display: flex;
             gap: 10px;
         }
 
-        /* 表格样式 - 添加毛玻璃效果和透明度 */
         .song-table-container {
             background: rgba(255, 255, 255, 0.6);
             backdrop-filter: blur(10px);
@@ -291,14 +244,12 @@
             margin-top: 20px;
         }
 
-        /* 歌曲列表容器 */
         .song-list {
             display: flex;
             flex-wrap: wrap;
             gap: 10px;
         }
 
-        /* 每首歌的卡片样式 */
         .song-item {
             background: rgba(252, 228, 232, 0.7);
             border-radius: 10px;
@@ -307,7 +258,6 @@
             text-align: center;
         }
 
-        /* 电脑端 - 三列排版 */
         @media (min-width: 769px) {
             .song-item {
                 width: calc(32.33% - 20px);
@@ -315,7 +265,6 @@
             }
         }
 
-        /* 手机端 - 单列排版及按钮调整 */
         @media (max-width: 768px) {
             .right-side-container {
                 width: 30%;
@@ -336,27 +285,27 @@
             .profile-container {
                 padding: 10px;
             }
+
             .song-list {
-        flex-direction: column; /* 强制纵向排列 */
-        gap: 10px; /* 保持垂直间距 */
-    }
-    .song-item {
-        width: 100%; /* 确保单列 */
-        text-align: left;
-        margin: 5px 0; /* 垂直间距 */
-    }
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .song-item {
+                width: 100%;
+                text-align: left;
+                margin: 5px 0;
+            }
 
             .song-container {
                 width: 100%;
                 padding: 10px;
             }
 
-            /* 搜索框恢复默认样式，去掉右侧按钮空间 */
             .search-input {
                 padding: 10px;
             }
 
-            /* 随机按钮单独摆放在搜索框下方 */
             .search-random-btn {
                 position: static;
                 transform: none;
@@ -374,18 +323,15 @@
                 color: white;
             }
 
-            /* 外文歌和非外文歌按钮上下排列 */
             .filter-buttons {
                 flex-direction: column;
             }
         }
 
-        /* 行悬停效果 */
         .song-item:hover {
             background: rgba(237, 231, 251, 0.8);
         }
 
-        /* 按钮基础样式 */
         .btn {
             display: block;
             width: 100%;
@@ -411,7 +357,6 @@
             color: white;
         }
 
-        /* 分页按钮样式 */
         .pagination {
             display: flex;
             justify-content: center;
@@ -435,12 +380,9 @@
     </style>
 </head>
 <body>
-	<!-- 开场动画 -->
+    <!-- 开场动画 -->
     <div class="intro" id="intro">
-        <!-- 起泡效果 -->
-        <div class="bubbles">
-            <!-- 动态生成泡泡 -->
-        </div>
+        <div class="bubbles"></div>
         <h1>唐茶歌单</h1>
         <div class="progress-bar">
             <div class="progress-bar-fill"></div>
@@ -455,31 +397,22 @@
 
     <!-- 歌单区域 -->
     <div class="song-container">
-        <!-- 新的歌曲列表容器 -->
         <div class="song-table-container">
-            <div class="song-list" id="songList">
-                <!-- 动态加载内容 -->
-            </div>
+            <div class="song-list" id="songList"></div>
         </div>
-        <!-- 分页按钮 -->
-        <div class="pagination" id="pagination">
-            <!-- 动态生成分页按钮 -->
-        </div>
+        <div class="pagination" id="pagination"></div>
     </div>
 
     <!-- 右侧固定区域 -->
     <div class="right-side-container">
-        <!-- 个人信息区域 -->
         <div class="profile-container">
-            <img src="唐茶_v2.png" class="avatar" alt="头像" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px;border: 3px solid #A06705;">
+            <img src="唐茶_v2.png" class="avatar" alt="头像" style="width: 100px; height: 100px; border-radius: 50%; margin-bottom: 15px; border: 3px solid #A06705;">
             <h2 style="color: #A06705; margin: 15px 0;">唐茶</h2>
             <a href="https://www.acfun.cn/u/2869300" class="btn" target="_blank">个人主页</a>
             <a href="https://live.acfun.cn/live/2869300" class="btn" target="_blank">直播页面</a>
         </div>
 
-        <!-- 搜索和筛选区域 -->
         <div class="search-container">
-            <!-- 搜索框和随机按钮容器 -->
             <div class="search-wrapper">
                 <input type="text" id="searchInput" class="search-input" placeholder="输入歌名或歌手...">
                 <button id="randomSongSelect" class="search-random-btn">随机</button>
@@ -497,7 +430,7 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <script>
-		        // 动态生成泡泡
+        // 动态生成泡泡
         const bubblesContainer = document.querySelector('.bubbles');
         for (let i = 0; i < 50; i++) {
             const bubble = document.createElement('span');
@@ -512,34 +445,22 @@
         // 开场动画结束后渐变到主内容
         setTimeout(() => {
             const intro = document.getElementById('intro');
-            const content = document.getElementById('content');
-
-            // 开场动画淡出
             intro.style.opacity = 0;
-
-            // 主内容淡入
-            setTimeout(() => {
-                content.style.opacity = 1;
-            }, 1500); // 1.5秒后显示主内容
-
-            // 隐藏开场动画
             setTimeout(() => {
                 intro.style.display = 'none';
-            }, 3000); // 3秒后完全隐藏开场动画
-        }, 3000); // 3秒后开始过渡
+            }, 1500);
+        }, 3000);
+
         // 创建随机星光
         function createStars() {
             const container = document.getElementById('starsContainer');
             const starCount = 100;
-            
             for (let i = 0; i < starCount; i++) {
                 const star = document.createElement('div');
                 star.className = 'star';
-                
                 const x = Math.random() * window.innerWidth;
                 const y = Math.random() * window.innerHeight;
                 const size = 3 + Math.random() * 8;
-                
                 star.style.cssText = `
                     left: ${x}px;
                     top: ${y}px;
@@ -547,60 +468,44 @@
                     height: ${size}px;
                     animation-delay: ${Math.random() * 2}s;
                 `;
-
                 startFloating(star);
                 container.appendChild(star);
             }
         }
 
-        // 星光飘动动画效果
         function startFloating(star) {
             let x = parseFloat(star.style.left);
             let y = parseFloat(star.style.top);
             let dx = (Math.random() - 0.5) * 0.5;
             let dy = (Math.random() - 0.5) * 0.5;
-
             function animate() {
                 x += dx;
                 y += dy;
-                
                 if (x < 0 || x > window.innerWidth) dx *= -1;
                 if (y < 0 || y > window.innerHeight) dy *= -1;
-
                 star.style.left = `${x}px`;
                 star.style.top = `${y}px`;
-                
                 requestAnimationFrame(animate);
             }
-            
             requestAnimationFrame(animate);
         }
 
-        // 显示复制提示
         function showCopyToast(message) {
             const toast = document.getElementById('copyToast');
             toast.textContent = message;
             toast.classList.add('show');
-            
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
         }
 
-        // 初始化星光
         createStars();
 
-        // 歌单功能
         let songs = [];
-        let currentFilters = {
-            search: '',
-            letter: '',
-            foreign: null
-        };
+        let currentFilters = { search: '', letter: '', foreign: null };
         let currentPage = 1;
         const pageSize = 50;
 
-        // 加载Excel数据
         function loadSongs() {
             fetch('唐茶歌单.xlsx')
                 .then(response => response.arrayBuffer())
@@ -608,21 +513,16 @@
                     const workbook = XLSX.read(new Uint8Array(data), { type: 'array' });
                     const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-                    
                     songs = jsonData
                         .filter(row => row.length >= 3 && row[0] && String(row[0]).trim() && row[1] && /^[A-Za-z]$/.test(String(row[1]).trim()))
                         .map(row => {
-                            const cleanedName = String(row[0])
-                                .trim()
-                                .replace(/[\r\n\s]+/g, ' ')
-                                .normalize('NFKC');
+                            const cleanedName = String(row[0]).trim().replace(/[\r\n\s]+/g, ' ').normalize('NFKC');
                             return {
                                 name: cleanedName,
                                 letter: String(row[1] || '').toUpperCase().trim(),
                                 foreign: String(row[2]).toUpperCase() === 'TRUE'
                             };
                         });
-                    
                     initLetterFilter();
                     renderTable();
                     renderPagination();
@@ -630,11 +530,9 @@
                 .catch(error => console.error('加载歌单失败:', error));
         }
 
-        // 初始化首字母筛选
         function initLetterFilter() {
             const letters = [...new Set(songs.map(s => s.letter))].sort();
             const filter = document.getElementById('letterFilter');
-            
             letters.forEach(letter => {
                 if (letter) {
                     const option = document.createElement('option');
@@ -645,45 +543,36 @@
             });
         }
 
-        // 渲染歌曲列表
-function renderTable() {
-    const filteredSongs = songs.filter(song => {
-        const matchSearch = !currentFilters.search || 
-            song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
-            song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
-        const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
-        const matchForeign = currentFilters.foreign === null || song.foreign === currentFilters.foreign;
-        return matchSearch && matchLetter && matchForeign;
-    });
+        function renderTable() {
+            const filteredSongs = songs.filter(song => {
+                const matchSearch = !currentFilters.search || 
+                    song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
+                    song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
+                const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
+                const matchForeign = currentFilters.foreign === null || song.foreign === currentFilters.foreign;
+                return matchSearch && matchLetter && matchForeign;
+            });
 
-    const start = (currentPage - 1) * pageSize;
-    const end = start + pageSize;
-    const paginatedSongs = filteredSongs.slice(start, end);
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const paginatedSongs = filteredSongs.slice(start, end);
 
-    const songList = document.getElementById('songList');
-    songList.innerHTML = paginatedSongs.map(song => `
-        <div class="song-item">
-            ${song.name}
-        </div>
-    `).join('');
+            const songList = document.getElementById('songList');
+            songList.innerHTML = paginatedSongs.map(song => `
+                <div class="song-item">${song.name}</div>
+            `).join('');
 
-    // 绑定复制功能
-    document.querySelectorAll('.song-item').forEach(item => {
-        item.addEventListener('click', () => {
-            const songName = item.textContent.trim(); // 获取歌曲名
-            const formattedText = `点歌@${songName}`; // 格式化文本
-            navigator.clipboard.writeText(formattedText) // 复制格式化后的文本
-                .then(() => {
-                    showCopyToast(`已复制：${formattedText}`); // 显示提示
-                })
-                .catch(() => {
-                    showCopyToast('复制失败，请检查权限设置'); // 显示错误提示
+            document.querySelectorAll('.song-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const songName = item.textContent.trim();
+                    const formattedText = `点歌@${songName}`;
+                    navigator.clipboard.writeText(formattedText)
+                        .then(() => showCopyToast(`已复制：${formattedText}`))
+                        .catch(() => showCopyToast('复制失败，请检查权限设置'));
                 });
-        });
-    });
-}
+            });
+        }
 
-        // 渲染分页按钮
         function renderPagination() {
             const filteredSongs = songs.filter(song => {
                 const matchSearch = !currentFilters.search || 
@@ -701,9 +590,7 @@ function renderTable() {
             for (let i = 1; i <= totalPages; i++) {
                 const button = document.createElement('button');
                 button.textContent = i;
-                if (i === currentPage) {
-                    button.classList.add('active');
-                }
+                if (i === currentPage) button.classList.add('active');
                 button.addEventListener('click', () => {
                     currentPage = i;
                     renderTable();
@@ -714,34 +601,28 @@ function renderTable() {
             }
         }
 
-        // 随机点歌并自动复制功能
-function randomSongSelect() {
-    const filteredSongs = songs.filter(song => {
-        const matchSearch = !currentFilters.search || 
-            song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
-            song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
-        const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
-        const matchForeign = currentFilters.foreign === null || song.foreign === currentFilters.foreign;
-        return matchSearch && matchLetter && matchForeign;
-    });
-
-    if (filteredSongs.length > 0) {
-        const randomIndex = Math.floor(Math.random() * filteredSongs.length);
-        const song = filteredSongs[randomIndex];
-        const formattedText = `点歌@${song.name}`; // 格式化文本为 "点歌@歌名"
-        navigator.clipboard.writeText(formattedText) // 复制格式化后的文本
-            .then(() => {
-                showCopyToast(`已复制：${formattedText}`); // 显示提示
-            })
-            .catch(() => {
-                showCopyToast(`随机推荐：${formattedText}，但复制失败`); // 显示错误提示
+        function randomSongSelect() {
+            const filteredSongs = songs.filter(song => {
+                const matchSearch = !currentFilters.search || 
+                    song.name.toLowerCase().includes(currentFilters.search.toLowerCase()) ||
+                    song.letter.toLowerCase().includes(currentFilters.search.toLowerCase());
+                const matchLetter = !currentFilters.letter || song.letter === currentFilters.letter;
+                const matchForeign = currentFilters.foreign === null || song.foreign === currentFilters.foreign;
+                return matchSearch && matchLetter && matchForeign;
             });
-    } else {
-        showCopyToast('当前筛选条件下没有歌曲');
-    }
-}
 
-        // 随机打开子窗口
+            if (filteredSongs.length > 0) {
+                const randomIndex = Math.floor(Math.random() * filteredSongs.length);
+                const song = filteredSongs[randomIndex];
+                const formattedText = `点歌@${song.name}`;
+                navigator.clipboard.writeText(formattedText)
+                    .then(() => showCopyToast(`已复制：${formattedText}`))
+                    .catch(() => showCopyToast(`随机推荐：${formattedText}，但复制失败`));
+            } else {
+                showCopyToast('当前筛选条件下没有歌曲');
+            }
+        }
+
         const links = [
             "https://www.acfun.cn/v/ac46700221",
             "https://www.acfun.cn/v/ac46174886",
@@ -828,20 +709,15 @@ function randomSongSelect() {
 
         function randomLink() {
             const randomIndex = Math.floor(Math.random() * links.length);
-            const windowWidth = 860; // 修改子窗口宽度为 860
-            const windowHeight = 700; // 修改子窗口高度为 700
+            const windowWidth = 860;
+            const windowHeight = 700;
             const leftPosition = window.screen.width - windowWidth - 20;
             const topPosition = window.screen.height - windowHeight - 80;
             try {
                 const childWindow = window.open(links[randomIndex], '_blank', `width=${windowWidth},height=${windowHeight},left=${leftPosition},top=${topPosition}`);
                 if (childWindow) {
-                   
-                    childWindow.onload = () => {
-                        showCopyToast('子窗口加载完成！');
-                    };
-                    childWindow.onerror = () => {
-                        showCopyToast('子窗口加载失败，请检查网络或链接！');
-                    };
+                    childWindow.onload = () => showCopyToast('子窗口加载完成！');
+                    childWindow.onerror = () => showCopyToast('子窗口加载失败，请检查网络或链接！');
                 } else {
                     showCopyToast('子窗口打开失败，请检查浏览器设置或弹出拦截！');
                 }
@@ -850,7 +726,6 @@ function randomSongSelect() {
             }
         }
 
-        // 事件监听
         document.getElementById('searchInput').addEventListener('input', e => {
             currentFilters.search = e.target.value.trim();
             currentPage = 1;
@@ -886,9 +761,7 @@ function randomSongSelect() {
         document.getElementById('randomLink').addEventListener('click', randomLink);
         document.getElementById('randomSongSelect').addEventListener('click', randomSongSelect);
 
-        // 初始化加载
         loadSongs();
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91fd08e59e50afba',t:'MTc0MTg4NDY3Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>
